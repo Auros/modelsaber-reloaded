@@ -1,17 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
+using ModelSaber.Services;
+using ModelSaber.Database;
+using Microsoft.AspNetCore.Http;
+using ModelSaber.Models.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using ModelSaber.Models.Settings;
-using ModelSaber.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ModelSaber
 {
@@ -24,18 +21,26 @@ namespace ModelSaber
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DiscordSettings>(_configuration.GetSection(nameof(DiscordSettings)));
+            var deploymentSettings = _configuration.GetSection(nameof(DeploymentSettings)).Get<DeploymentSettings>();
+            var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
+            var discordConfig = _configuration.GetSection(nameof(DiscordSettings));
+            var databaseConfig = _configuration.GetSection(nameof(DatabaseSettings));
+            services.Configure<DiscordSettings>(discordConfig);
+            services.Configure<DatabaseSettings>(databaseConfig);
 
             services.AddSingleton<IDiscordSettings>(ii => ii.GetRequiredService<IOptions<DiscordSettings>>().Value);
+            services.AddSingleton<IDatabaseSettings>(ii => ii.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+            services.AddDbContext<ModelSaberContext>();
 
             services.AddSingleton<HttpClient>();
             services.AddSingleton<DiscordService>();
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "AllowSpecificOrigins", opt =>
+                options.AddPolicy(name: "_allowModelSaberWhitelistedOrigins", opt =>
                 {
-                    opt.WithOrigins("https://localhost:44321", "https://campaignsaber.com")
+                    opt.WithOrigins(deploymentSettings.CORS)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -53,7 +58,7 @@ namespace ModelSaber
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors("AllowSpecificOrigins");
+            app.UseCors("_allowModelSaberWhitelistedOrigins");
             app.UseAuthentication();
             app.UseAuthorization();
 
