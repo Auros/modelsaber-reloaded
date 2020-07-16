@@ -6,9 +6,6 @@ using System.Net.Http.Headers;
 using ModelSaber.Models.Discord;
 using ModelSaber.Models.Settings;
 using System.Collections.Generic;
-using System;
-using Microsoft.Extensions.Hosting.Internal;
-using System.Threading;
 
 namespace ModelSaber.Services
 {

@@ -14,8 +14,9 @@ namespace ModelSaber.Models.Model
         public string InstallURL { get; set; }
         public string DownloadURL { get; set; }
         public DownloadFileType Type { get; set; }
+        public Visibility Visibility { get; set; }
         public ModelCollection Collection { get; set; }
-
+        
         public bool IsVariation { get; set; }
         public uint[] Variations { get; set; }
     }

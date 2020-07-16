@@ -1,3 +1,4 @@
+using System.Text;
 using System.Net.Http;
 using ModelSaber.Services;
 using ModelSaber.Database;
@@ -7,8 +8,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ModelSaber
 {
@@ -21,30 +24,52 @@ namespace ModelSaber
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var jwtSettings = _configuration.GetSection(nameof(JWTSettings)).Get<JWTSettings>();
             var deploymentSettings = _configuration.GetSection(nameof(DeploymentSettings)).Get<DeploymentSettings>();
-            var databaseSettings = _configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
+            
+            var jwtConfig = _configuration.GetSection(nameof(JWTSettings));
             var discordConfig = _configuration.GetSection(nameof(DiscordSettings));
             var databaseConfig = _configuration.GetSection(nameof(DatabaseSettings));
+
+            services.Configure<JWTSettings>(jwtConfig);
             services.Configure<DiscordSettings>(discordConfig);
             services.Configure<DatabaseSettings>(databaseConfig);
 
+            services.AddSingleton<IJWTSettings>(ii => ii.GetRequiredService<IOptions<JWTSettings>>().Value);
             services.AddSingleton<IDiscordSettings>(ii => ii.GetRequiredService<IOptions<DiscordSettings>>().Value);
             services.AddSingleton<IDatabaseSettings>(ii => ii.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
             services.AddDbContext<ModelSaberContext>();
 
             services.AddSingleton<HttpClient>();
+            services.AddSingleton<JWTService>();
+            services.AddSingleton<UserService>();
             services.AddSingleton<DiscordService>();
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "_allowModelSaberWhitelistedOrigins", opt =>
+                options.AddPolicy(name: "_allowModelSaberOrigins", opt =>
                 {
                     opt.WithOrigins(deploymentSettings.CORS)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
             });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                    };
+                });
 
             services.AddControllers();
         }
@@ -58,9 +83,8 @@ namespace ModelSaber
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors("_allowModelSaberWhitelistedOrigins");
+            app.UseCors("_allowModelSaberOrigins");
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

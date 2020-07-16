@@ -4,9 +4,9 @@ namespace ModelSaber.Models.User
 {
     public class User
     {
-        public uint ID { get; set; }
+        public string ID { get; set; }
         public DiscordUser Profile { get; set; }
-        public string[] Permissions { get; set; }
-        public string[] ExternalProfiles { get; set; }
+        public string[] Permissions { get; set; } = new string[] { "*.upload" };
+        public string[] ExternalProfiles { get; set; } = new string[0]; 
     }
 }
