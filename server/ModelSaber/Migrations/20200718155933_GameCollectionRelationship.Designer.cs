@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ModelSaber.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ModelSaber.Migrations
 {
     [DbContext(typeof(ModelSaberContext))]
-    partial class ModelSaberContextModelSnapshot : ModelSnapshot
+    [Migration("20200718155933_GameCollectionRelationship")]
+    partial class GameCollectionRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,10 +193,6 @@ namespace ModelSaber.Migrations
                         .IsRequired()
                         .HasColumnName("name")
                         .HasColumnType("text");
-
-                    b.Property<int>("Visibility")
-                        .HasColumnName("visibility")
-                        .HasColumnType("integer");
 
                     b.HasKey("ID")
                         .HasName("pk_model_collections");

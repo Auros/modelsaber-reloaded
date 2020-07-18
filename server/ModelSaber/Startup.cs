@@ -85,6 +85,7 @@ namespace ModelSaber
             app.UseRouting();
             app.UseCors("_allowModelSaberOrigins");
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

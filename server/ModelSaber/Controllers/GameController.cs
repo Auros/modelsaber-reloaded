@@ -1,14 +1,17 @@
-﻿using ModelSaber.Database;
+﻿using System;
+using System.IO;
+using System.Linq;
+using ModelSaber.Models;
+using ModelSaber.Services;
+using ModelSaber.Database;
+using ModelSaber.Models.User;
 using ModelSaber.Models.Game;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using ModelSaber.Services;
-using ModelSaber.Models.User;
-using System.Linq;
-using System;
 
 namespace ModelSaber.Controllers
 {
@@ -16,13 +19,22 @@ namespace ModelSaber.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private readonly UserService _userService;
         private readonly ModelSaberContext _modelSaber;
 
-        public GameController(UserService userService, ModelSaberContext modelSaber)
+        public GameController(ModelSaberContext modelSaber)
         {
             _modelSaber = modelSaber;
-            _userService = userService;
+        }
+
+        /// <summary>
+        /// Gets all the public games.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IAsyncEnumerable<Game> GetGames()
+        {
+            return _modelSaber.Games.Where(g => g.Visibility == Visibility.Public).AsAsyncEnumerable();
         }
 
         /// <summary>
@@ -45,7 +57,7 @@ namespace ModelSaber.Controllers
             
             // It appears we weren't able to find the game through its ID. Let's check if the ID put in was its actual ID
             //   Convert the gameIdentifier to a unsigned integer.
-            if (uint.TryParse(gameIdentifier, out uint id))
+            if (ulong.TryParse(gameIdentifier, out ulong id))
             {
                 game = await _modelSaber.Games.FirstOrDefaultAsync(g => g.ID == id);
                 if (game != null)
@@ -57,7 +69,7 @@ namespace ModelSaber.Controllers
         }
 
         /// <summary>
-        /// Creates a game from the specified body content.
+        /// Creates a Game from the specified body content.
         /// </summary>
         /// <param name="upload"></param>
         /// <returns></returns>
@@ -70,22 +82,33 @@ namespace ModelSaber.Controllers
         public async Task<IActionResult> CreateGame([FromForm] UploadGame upload)
         {
             User user = await UserService.UserFromContext(HttpContext, _modelSaber);
-            if (!user.Permissions.Contains("*.*"))
+            if (!user.Role.HasFlag(ModelSaberRole.Admin))
             {
                 return Unauthorized();
             }
+            string fileExtension = Path.GetExtension(upload.Icon.FileName);
             bool exists = await _modelSaber.Games.AnyAsync(g => g.Title.ToLower() == upload.Title.ToLower());
-            if (upload.Icon == null || upload.Icon.Length == 0 || exists)
+            if (upload.Icon == null || upload.Icon.Length == 0 || exists || !Utilities.VerifyImageFileExtension(upload.Icon.OpenReadStream(), fileExtension))
             {
                 return BadRequest();
             }
+
             Game game = new Game
             {
+                ID = (ulong)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 Title = upload.Title,
                 Created = DateTime.UtcNow,
                 Visibility = upload.Visibility,
                 Description = upload.Description
             };
+            string saveFolder = Path.Combine("files", user.ID, "images");
+            string saveLocation = Path.Combine(saveFolder, game.ID + fileExtension);
+
+            Directory.CreateDirectory(saveFolder);
+            await Utilities.SaveIFormToFile(upload.Icon, saveLocation);
+            game.IconURL = "/" + saveLocation.Replace("\\", "/");
+            _modelSaber.Games.Add(game);
+            await _modelSaber.SaveChangesAsync();
             return Ok(game);
         }
     }

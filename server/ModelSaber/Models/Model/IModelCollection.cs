@@ -1,6 +1,6 @@
 ﻿namespace ModelSaber.Models.Model
 {
-    public interface IModelCollection : IModelSaberObject
+    public interface IModelCollection
     {
         string Name { get; }
         string Description { get; }

@@ -4,7 +4,7 @@ namespace ModelSaber.Models
 {
     public interface IModelSaberObject
     {
-        uint ID { get; }
+        ulong ID { get; }
         DateTime Created { get; }
     }
 }

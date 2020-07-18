@@ -1,11 +1,13 @@
-﻿namespace ModelSaber.Models.Model
+﻿using System.Collections.Generic;
+
+namespace ModelSaber.Models.Model
 {
-    public interface IModel : IModelSaberObject
+    public interface IModel
     {
         string Name { get; }
-        string[] Tags { get; }
         string Preview { get; }
-        uint CollectionID { get; }
+        ulong CollectionID { get; }
+        List<string> Tags { get; }
         DownloadFileType Type { get; }
     }
 }
