@@ -1,4 +1,4 @@
-﻿namespace ModelSaber.Models
+﻿namespace ModelSaber.Common
 {
     public class Model
     {
