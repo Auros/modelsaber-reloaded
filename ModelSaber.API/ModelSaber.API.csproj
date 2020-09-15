@@ -7,6 +7,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-preview8" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\ModelSaber.Common\ModelSaber.Common.csproj" />
   </ItemGroup>
 </Project>
