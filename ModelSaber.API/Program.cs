@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace ModelSaber
+namespace ModelSaber.API
 {
     public class Program
     {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace ModelSaber.Controllers
+namespace ModelSaber.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

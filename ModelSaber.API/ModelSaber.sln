@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelSaber", "ModelSaber.csproj", "{C72DE1CC-5381-43D8-8C70-9E2ADE3760AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelSaber.API", "ModelSaber.API.csproj", "{C72DE1CC-5381-43D8-8C70-9E2ADE3760AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelSaber.Common", "..\ModelSaber.Common\ModelSaber.Common.csproj", "{654B2D82-227A-4021-98FF-50FBEB04202C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelSaber.Common", "..\ModelSaber.Common\ModelSaber.Common.csproj", "{654B2D82-227A-4021-98FF-50FBEB04202C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

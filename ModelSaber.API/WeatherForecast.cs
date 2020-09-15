@@ -1,6 +1,6 @@
 using System;
 
-namespace ModelSaber
+namespace ModelSaber.API
 {
     public class WeatherForecast
     {
