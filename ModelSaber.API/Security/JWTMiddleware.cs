@@ -30,7 +30,9 @@ namespace ModelSaber.API.Security
             var response = _jwtService.IDFromToken(token);
             if (response.validated)
             {
-                User user = await modelSaberContext.Users.FirstOrDefaultAsync(u => u.Id == response.id);
+                // ??? THE PIPELINE FAILS IF I DONT DO THIS
+                _ = modelSaberContext.Users.First();
+                User user = await modelSaberContext.Users.FirstAsync(u => u.Id == response.id);
                 context.Items["User"] = user;
             }
         }

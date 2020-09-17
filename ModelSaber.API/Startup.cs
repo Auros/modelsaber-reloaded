@@ -50,8 +50,10 @@ namespace ModelSaber.API
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            app.UseMiddleware<JWTMiddleware>();
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseMiddleware<JWTMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

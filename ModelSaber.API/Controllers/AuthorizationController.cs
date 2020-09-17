@@ -46,6 +46,7 @@ namespace ModelSaber.API.Controllers
                     Role = Role.Uploader
                 };
                 user = (await _modelSaberContext.Users.AddAsync(user)).Entity;
+                await _modelSaberContext.SaveChangesAsync();
             }
             token = _jwtService.GenerateToken(user);
             return Ok(new { token });

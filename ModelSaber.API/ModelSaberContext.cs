@@ -44,7 +44,8 @@ namespace ModelSaber.API
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_databaseSettings.ConnectionString).UseSnakeCaseNamingConvention();
+            optionsBuilder.UseNpgsql(_databaseSettings.ConnectionString);
+            optionsBuilder.UseSnakeCaseNamingConvention();
         }
     }
 }
