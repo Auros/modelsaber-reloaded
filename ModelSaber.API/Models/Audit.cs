@@ -1,5 +1,5 @@
-﻿using ModelSaber.Common;
-using System;
+﻿using System;
+using ModelSaber.Common;
 
 namespace ModelSaber.API.Models
 {
