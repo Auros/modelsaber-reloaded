@@ -5,7 +5,12 @@ using ModelSaber.API.Interfaces;
 
 namespace ModelSaber.API.Services
 {
-    public class Auditor
+    public interface IAuditor
+    {
+        void Audit(ISource source, User user, string action);
+    }
+
+    public class Auditor : IAuditor
     {
         private readonly ModelSaberContext _modelSaberContext;
 
@@ -19,6 +24,7 @@ namespace ModelSaber.API.Services
             await _modelSaberContext.Audits.AddAsync(new Audit
             {
                 User = user,
+                Action = action,
                 Time = DateTime.UtcNow,
                 Source = source.SourceName
             });

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ModelSaber.API.Services;
+using System.Net.Http;
 
 namespace ModelSaber.API
 {
@@ -21,7 +23,13 @@ namespace ModelSaber.API
         {
             services.AddCors();
             services.AddSingleton(_configuration.GetSection(nameof(JWTSettings)).Get<JWTSettings>());
+            services.AddSingleton(_configuration.GetSection(nameof(DiscordSettings)).Get<DiscordSettings>());
             services.AddSingleton(_configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>());
+
+            services.AddSingleton<HttpClient>();
+            services.AddSingleton<DiscordService>();
+            services.AddScoped<IAuditor, Auditor>();
+            services.AddSingleton<IJWTService, JWTService>();
             services.AddDbContext<ModelSaberContext>();
             services.AddControllers();
         }
@@ -43,6 +51,7 @@ namespace ModelSaber.API
                 .AllowAnyHeader());
 
             app.UseMiddleware<JWTMiddleware>();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
