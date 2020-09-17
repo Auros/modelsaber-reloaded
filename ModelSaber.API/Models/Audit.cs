@@ -16,11 +16,6 @@ namespace ModelSaber.API.Models
         public User User { get; set; }
 
         /// <summary>
-        /// The ID of the subject of the Audit
-        /// </summary>
-        public Guid UserId { get; set; }
-
-        /// <summary>
         /// The source of the audit message
         /// </summary>
         public string Source { get; set; }

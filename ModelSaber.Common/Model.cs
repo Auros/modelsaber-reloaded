@@ -45,7 +45,6 @@ namespace ModelSaber.Common
         /// </summary>
         public string Description { get; set; }
 
-
         /// <summary>
         /// The relative URL of the model of the file.
         /// </summary>
