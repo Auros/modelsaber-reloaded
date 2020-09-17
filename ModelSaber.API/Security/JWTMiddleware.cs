@@ -32,7 +32,7 @@ namespace ModelSaber.API.Security
             {
                 // ??? THE PIPELINE FAILS IF I DONT DO THIS
                 _ = modelSaberContext.Users.First();
-                User user = await modelSaberContext.Users.FirstAsync(u => u.Id == response.id);
+                User user = await modelSaberContext.Users.FirstOrDefaultAsync(u => u.Id == response.id);
                 context.Items["User"] = user;
             }
         }

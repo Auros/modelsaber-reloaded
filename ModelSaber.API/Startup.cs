@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ModelSaber.API.Services;
 using System.Net.Http;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace ModelSaber.API
 {
@@ -40,21 +41,13 @@ namespace ModelSaber.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseMiddleware<JWTMiddleware>();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
