@@ -2,9 +2,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp5.0</TargetFramework>
     <AssemblyName>ModelSaber.API</AssemblyName>
+    <UserSecretsId>973f517f-7018-4080-8b85-c7191e0aea95</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-preview8" />
+    <PackageReference Include="EFCore.NamingConventions" Version="5.0.0-rc1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-rc1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModelSaber.Common\ModelSaber.Common.csproj" />

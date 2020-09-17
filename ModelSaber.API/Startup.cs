@@ -1,3 +1,5 @@
+using ModelSaber.API.Models;
+using ModelSaber.API.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +19,9 @@ namespace ModelSaber.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            services.Configure<JWTSettings>(_configuration.GetSection(nameof(JWTSettings)));
+            services.Configure<DatabaseSettings>(_configuration.GetSection(nameof(DatabaseSettings)));
             services.AddControllers();
         }
 
@@ -31,7 +36,12 @@ namespace ModelSaber.API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            app.UseMiddleware<JWTMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
