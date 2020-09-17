@@ -21,6 +21,11 @@ namespace ModelSaber.Common
         public string Name { get; set; }
 
         /// <summary>
+        /// The amount of times the model was downloaded.
+        /// </summary>
+        public int DownloadCount { get; set; }
+
+        /// <summary>
         /// The Markdown description of the playlist.
         /// </summary>
         public string Description { get; set; }

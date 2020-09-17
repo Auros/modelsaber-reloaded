@@ -31,6 +31,11 @@ namespace ModelSaber.Common
         public User Uploader { get; set; }
 
         /// <summary>
+        /// The amount of times the model was downloaded.
+        /// </summary>
+        public int DownloadCount { get; set; }
+
+        /// <summary>
         /// The type of file that the model is.
         /// </summary>
         public FileType FileType { get; set; }
@@ -39,6 +44,7 @@ namespace ModelSaber.Common
         /// The Markdown description of the model.
         /// </summary>
         public string Description { get; set; }
+
 
         /// <summary>
         /// The relative URL of the model of the file.

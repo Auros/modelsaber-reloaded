@@ -20,8 +20,9 @@ namespace ModelSaber.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.Configure<JWTSettings>(_configuration.GetSection(nameof(JWTSettings)));
-            services.Configure<DatabaseSettings>(_configuration.GetSection(nameof(DatabaseSettings)));
+            services.AddSingleton(_configuration.GetSection(nameof(JWTSettings)).Get<JWTSettings>());
+            services.AddSingleton(_configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>());
+            services.AddDbContext<ModelSaberContext>();
             services.AddControllers();
         }
 
