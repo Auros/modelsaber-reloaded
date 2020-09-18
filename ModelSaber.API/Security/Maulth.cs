@@ -10,6 +10,7 @@ namespace ModelSaber.API.Security
     public class Maulth : Attribute, IAuthorizationFilter
     {
         public Role Role { get; set; }
+        public bool AllowAnonymous { get; set; }
 
         public Maulth(Role role = Role.None)
         {
@@ -19,7 +20,7 @@ namespace ModelSaber.API.Security
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = (User)context.HttpContext.Items["User"];
-            if (user == null || !user.Role.HasFlag(Role))
+            if (AllowAnonymous == false && (user == null || !user.Role.HasFlag(Role)))
             {
                 context.Result = new JsonResult(new { error = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }

@@ -84,19 +84,20 @@ namespace ModelSaber.API.Controllers
             {
                 string fileExtension = Path.GetExtension(body.Icon.FileName);
                 string saveFolder = Path.Combine("Files", "Collections", collection.Id.ToString());
-                if (!Utilities.VerifyFileExtension(body.Icon.OpenReadStream(), fileExtension))
-                    throw new Exception("Invalid Icon File. Must be a png, jpg, or gif.");
+                if (!Utilities.IsFileExtensionValid(body.Icon.OpenReadStream(), fileExtension))
+                    throw new Exception("Invalid Icon File. Must be a png, jpg, apng, or gif.");
                 if (!Directory.Exists(saveFolder)) Directory.CreateDirectory(saveFolder);
-                string hash = body.Icon.OpenReadStream().ComputeHash();
+                string hash = body.Icon.OpenReadStream().ComputeHash(HashType.SHA256);
                 string iconPath = Path.Combine(saveFolder, hash + fileExtension);
                 await Utilities.SaveIFormToFile(body.Icon, iconPath);
                 collection.IconURL = "/" + iconPath.Replace("\\", "/").ToLower();
-                _auditor.Audit(this, (User)HttpContext.Items["User"], $"uploaded a new collection {collection.Name}", collection.Id);
                 await _modelSaberContext.SaveChangesAsync();
+                _auditor.Audit(this, (User)HttpContext.Items["User"], $"uploaded a new collection {collection.Name}", collection.Id);
             }
             catch (Exception e)
             {
                 _modelSaberContext.Collections.Remove(collection);
+                await _modelSaberContext.SaveChangesAsync();
                 return BadRequest(new { error = e.Message });
             }
             return Ok(collection);
@@ -113,6 +114,7 @@ namespace ModelSaber.API.Controllers
             }
             _auditor.Audit(this, (User)HttpContext.Items["User"], $"deleted the collection {collection.Name}", collection.Id);
             _modelSaberContext.Collections.Remove(collection);
+            await _modelSaberContext.SaveChangesAsync();
             return NoContent();
         }
 

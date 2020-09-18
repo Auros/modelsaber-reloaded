@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ModelSaber.Common
 {
@@ -78,6 +79,6 @@ namespace ModelSaber.Common
         /// <summary>
         /// Playlists that this model is present in.
         /// </summary>
-        public ICollection<Playlist> Playlists { get; set; }
+        public ICollection<Playlist> Playlists { get; set; } = new Collection<Playlist>();
     }
 }

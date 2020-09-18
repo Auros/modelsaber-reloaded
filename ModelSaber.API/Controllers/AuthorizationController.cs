@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using ModelSaber.Common;
+using System.Threading.Tasks;
 using ModelSaber.API.Security;
 using ModelSaber.API.Services;
-using ModelSaber.Common;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ModelSaber.API.Controllers
 {

@@ -8,6 +8,7 @@ using ModelSaber.API.Services;
 using ModelSaber.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,10 +29,9 @@ namespace ModelSaber.API.Controllers
             _modelSaberContext = modelSaberContext;
         }
 
-        [Maulth]
         [HttpGet]
-        [AllowAnonymous]
-        public IEnumerable<Model> GetModels(int page = 0, int count = 25)
+        [Maulth(AllowAnonymous = true)]
+        public IEnumerable<Model> GetModels([FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "page")] int count = 25)
         {
             if (0 > page) page = 0;
             if (count > 25) count = 25;
@@ -49,9 +49,8 @@ namespace ModelSaber.API.Controllers
             return _modelSaberContext.Models.Where(x => x.Status == ApprovalStatus.Approved && x.Visibility == Visibility.Public).Skip(page * count).Take(count);
         }
 
-        [Maulth]
-        [AllowAnonymous]
         [HttpGet("{id}")]
+        [Maulth(AllowAnonymous = true)]
         public async Task<IActionResult> GetModel(Guid id)
         {
             User visitor = (User)HttpContext.Items["User"];
@@ -108,7 +107,108 @@ namespace ModelSaber.API.Controllers
             {
                 return NotFound(new { error = "??? Please stop???" });
             }
-            return Ok();
+            model.Status = body.Status;
+            model.Visibility = body.Visibility;
+            model = (await _modelSaberContext.Models.AddAsync(model)).Entity;
+            await _modelSaberContext.SaveChangesAsync();
+            try
+            {
+                // Save Model File
+                string saveFolder = Path.Combine("Files", "Models", model.Id.ToString());
+                if (!Directory.Exists(saveFolder)) Directory.CreateDirectory(saveFolder);
+                string modelFileExtension = Path.GetExtension(body.Model.FileName);
+                if (modelFileExtension == ".zip")
+                {
+                    if (!Utilities.IsZIP(body.Model.OpenReadStream()))
+                        throw new Exception("File is not a valid ZIP");
+                    model.FileType = FileType.Archive;
+                }
+                else
+                {
+                    model.FileType = FileType.Single;
+                }
+                string modelHash = body.Model.OpenReadStream().ComputeHash(HashType.MD5);
+                if (await _modelSaberContext.Models.AnyAsync(m => m.Hash == modelHash))
+                {
+                    throw new Exception("Model Already Exists");
+                }
+                string modelPath = Path.Combine(saveFolder, modelHash + modelFileExtension);
+                await Utilities.SaveIFormToFile(body.Model, modelPath);
+                model.DownloadURL = "/" + modelPath.Replace("\\", "/").ToLower();
+                model.Hash = modelHash;
+
+                // Save Thumbnail
+                string thumbnailFileExtension = Path.GetExtension(body.Thumbnail.FileName);
+                if (!Utilities.IsFileExtensionValid(body.Thumbnail.OpenReadStream(), thumbnailFileExtension))
+                    throw new Exception("Invalid Thumbnail File. Must be a png, jpg, apng, or gif.");
+                string thumbnailHash = body.Thumbnail.OpenReadStream().ComputeHash(HashType.SHA256);
+                string thumbnailPath = Path.Combine(saveFolder, thumbnailHash + thumbnailFileExtension);
+                await Utilities.SaveIFormToFile(body.Thumbnail, thumbnailPath);
+                model.ThumbnailURL = "/" + thumbnailPath.Replace("\\", "/").ToLower();
+
+                // Save Model
+                model.UploadDate = DateTime.UtcNow;
+                await _modelSaberContext.SaveChangesAsync();
+                _auditor.Audit(this, uploader, $"uploaded a new model.", model.Id);
+            }
+            catch (Exception e)
+            {
+                _modelSaberContext.Models.Remove(model);
+                await _modelSaberContext.SaveChangesAsync();
+                return BadRequest(new { error = e.Message });
+            }
+            return Ok(model);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteModel(Guid id)
+        {
+            Model model = await _modelSaberContext.Models.FirstOrDefaultAsync(m => m.Id == id);
+            if (model == null)
+            {
+                return NotFound();
+            }
+            _auditor.Audit(this, (User)HttpContext.Items["User"], $"deleted the model {model.Name}", model.Id);
+            _modelSaberContext.Models.Remove(model);
+            await _modelSaberContext.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [Maulth(Role.Manager)]
+        [HttpPost("update/{id}")]
+        public async Task<IActionResult> ApproveModel(Guid id, [FromQuery(Name = "public")] bool makePublic)
+        {
+            Model model = await _modelSaberContext.Models.FirstOrDefaultAsync(m => m.Id == id);
+            if (model == null)
+            {
+                return NotFound();
+            }
+            model.Status = ApprovalStatus.Approved;
+            if (makePublic)
+            {
+                model.Visibility = Visibility.Public;
+                model.Status = ApprovalStatus.Approved;
+            }
+            await _modelSaberContext.SaveChangesAsync();
+            _auditor.Audit(this, (User)HttpContext.Items["User"], $"approved a model", model.Id);
+            return Ok(model);
+        }
+
+        public async Task<IActionResult> DenyModel(Guid id)
+        {
+            Model model = await _modelSaberContext.Models.FirstOrDefaultAsync(m => m.Id == id);
+            if (model == null)
+            {
+                return NotFound();
+            }
+            model.Status = ApprovalStatus.Denied;
+            if (model.Visibility == Visibility.Public)
+            {
+                model.Visibility = Visibility.Private;
+            }
+            await _modelSaberContext.SaveChangesAsync();
+            _auditor.Audit(this, (User)HttpContext.Items["User"], $"denied a model", model.Id);
+            return Ok(model);
         }
 
         public class UploadBody

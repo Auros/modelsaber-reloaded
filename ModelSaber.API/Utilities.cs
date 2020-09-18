@@ -38,7 +38,7 @@ namespace ModelSaber.API
             {
                 ".gif", new List<byte[]>
                 {
-                    new byte[] { 0x47, 0x49, 0x36, 0x38 }
+                    new byte[] { 0x47, 0x49, 0x46, 0x38 }
                 }
             },
             {
@@ -61,7 +61,7 @@ namespace ModelSaber.API
             await file.CopyToAsync(stream);
         }
 
-        public static bool VerifyFileExtension(Stream stream, string extension)
+        public static bool IsFileExtensionValid(Stream stream, string extension)
         {
             if (!_fileSignatures.TryGetValue(extension, out List<byte[]> signatures))
                 return false;
@@ -71,16 +71,44 @@ namespace ModelSaber.API
             return signatures.Any(sig => headerBytes.Take(sig.Length).SequenceEqual(sig));
         }
 
-        public static string ComputeHash(this Stream stream)
+        public static bool IsZIP(Stream stream)
         {
-            using SHA256 sha256 = SHA256.Create();
-            byte[] hash = sha256.ComputeHash(stream);
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
-            {
-                builder.Append(hash[i].ToString("x2"));
-            }
-            return builder.ToString().ToLower();
+            using BinaryReader reader = new BinaryReader(stream);
+            var headerBytes = reader.ReadBytes(_fileSignatures[".zip"].Max(m => m.Length));
+            return _fileSignatures[".zip"].Any(sig => headerBytes.Take(sig.Length).SequenceEqual(sig));
         }
+
+        public static string ComputeHash(this Stream stream, HashType type = HashType.SHA256)
+        {
+            if (type == HashType.SHA256)
+            {
+                using SHA256 sha256 = SHA256.Create();
+                byte[] hash = sha256.ComputeHash(stream);
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    builder.Append(hash[i].ToString("x2"));
+                }
+                return builder.ToString().ToLower();
+            }
+            if (type == HashType.MD5)
+            {
+                using MD5 md5 = MD5.Create();
+                byte[] hash = md5.ComputeHash(stream);
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    builder.Append(hash[i].ToString("x2"));
+                }
+                return builder.ToString().ToLower();
+            }
+            return null;
+        }
+    }
+
+    public enum HashType
+    {
+        MD5,
+        SHA256
     }
 }
