@@ -6,17 +6,22 @@ namespace ModelSaber.API.Models
     public class Audit
     {
         /// <summary>
-        /// The ID of the Audit message
+        /// The ID of the Audit message.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// The subject of the Audit
+        /// The subject of the Audit.
         /// </summary>
         public User User { get; set; }
 
         /// <summary>
-        /// The source of the audit message
+        /// The subject of the audit message.
+        /// </summary>
+        public Guid Subject { get; set; }
+
+        /// <summary>
+        /// The source of the audit message.
         /// </summary>
         public string Source { get; set; }
 

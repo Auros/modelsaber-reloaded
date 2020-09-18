@@ -2,6 +2,7 @@
 using ModelSaber.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
 
 namespace ModelSaber.API.Security
 {
@@ -20,7 +21,7 @@ namespace ModelSaber.API.Security
             var user = (User)context.HttpContext.Items["User"];
             if (user == null || !user.Role.HasFlag(Role))
             {
-                context.Result = new ForbidResult();
+                context.Result = new JsonResult(new { error = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
             }
         }
     }

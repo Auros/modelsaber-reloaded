@@ -7,7 +7,7 @@ namespace ModelSaber.API.Services
 {
     public interface IAuditor
     {
-        void Audit(ISource source, User user, string action);
+        void Audit(ISource source, User user, string action, Guid subject);
     }
 
     public class Auditor : IAuditor
@@ -19,12 +19,13 @@ namespace ModelSaber.API.Services
             _modelSaberContext = modelSaberContext;
         }
 
-        public async void Audit(ISource source, User user, string action)
+        public async void Audit(ISource source, User user, string action, Guid subject)
         {
             await _modelSaberContext.Audits.AddAsync(new Audit
             {
                 User = user,
                 Action = action,
+                Subject = subject,
                 Time = DateTime.UtcNow,
                 Source = source.SourceName
             });
