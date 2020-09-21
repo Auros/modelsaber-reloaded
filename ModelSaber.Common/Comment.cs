@@ -23,5 +23,10 @@ namespace ModelSaber.Common
         /// The message (comment) associated with the object.
         /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// The time the comment was sent.
+        /// </summary>
+        public DateTime Time { get; set; }
     }
 }
