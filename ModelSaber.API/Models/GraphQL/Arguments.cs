@@ -13,5 +13,15 @@ namespace ModelSaber.API.Models.GraphQL
                 Description = description
             };
         }
+
+        public static QueryArgument<IntGraphType> Count(string description = "The count.")
+        {
+            return new QueryArgument<IntGraphType>
+            {
+                Name = "count",
+                DefaultValue = 10,
+                Description = description
+            };
+        }
     }
 }

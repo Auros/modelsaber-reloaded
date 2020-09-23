@@ -37,6 +37,8 @@ namespace ModelSaber.API
             services.AddHttpContextAccessor();
 
             services.AddSingleton<UserType>();
+            services.AddSingleton<ModelType>();
+            services.AddSingleton<FileTypeType>();
             services.AddSingleton<VisibilityType>();
             services.AddSingleton<CollectionType>();
             services.AddSingleton<DiscordUserType>();

@@ -1,5 +1,8 @@
-﻿using GraphQL.Types;
+﻿using GraphQL;
+using System.Linq;
+using GraphQL.Types;
 using ModelSaber.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace ModelSaber.API.Models.GraphQL
 {
@@ -16,7 +19,33 @@ namespace ModelSaber.API.Models.GraphQL
             Field<VisibilityType>("defaultVisibility", description: "The default visbility for any models uploaded to this collection.");
             Field<ApprovalStatusType>("defaultApprovalStatus", description: "The default approval status for any models uploaded to this collection.");
 
-            //FieldAsync<ListGraphType<Modelg>>
+            Field<ListGraphType<ModelType>>(
+                "models",
+                "The models in the collection",
+                arguments: new QueryArguments(
+                    Arguments.Page(),
+                    Arguments.Count()
+                ),
+                resolve: context =>
+                {
+                    ModelSaberContext modelSaberContext = context.Resolve<ModelSaberContext>();
+                    HttpContext httpContext = context.HttpContext();
+                    User visitor = (User)httpContext.Items["User"];
+
+                    int page = context.GetArgument<int>("page");
+                    int count = context.GetArgument<int>("count");
+
+                    if (visitor != null)
+                    {
+                        if (visitor.Role.HasFlag(Role.Manager))
+                        {
+                            modelSaberContext.Models.Skip(page * count).Take(count);
+                        }
+                        return modelSaberContext.Models.Where(x => (x.Uploader.Id == visitor.Id) || (x.Status == ApprovalStatus.Approved && x.Visibility == Visibility.Public)).Skip(page * count).Take(count);
+                    }
+                    return modelSaberContext.Models.Where(x => x.Status == ApprovalStatus.Approved && x.Visibility == Visibility.Public).Skip(page * count).Take(count);
+                }
+            );
         }
     }
 
