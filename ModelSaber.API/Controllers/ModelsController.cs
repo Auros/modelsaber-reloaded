@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ModelSaber.API.Interfaces;
-using ModelSaber.API.Security;
-using ModelSaber.API.Services;
-using ModelSaber.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
+using ModelSaber.Common;
 using System.Threading.Tasks;
+using ModelSaber.API.Services;
+using ModelSaber.API.Security;
+using Microsoft.AspNetCore.Mvc;
+using ModelSaber.API.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace ModelSaber.API.Controllers
 {
@@ -31,7 +30,7 @@ namespace ModelSaber.API.Controllers
 
         [HttpGet]
         [Maulth(AllowAnonymous = true)]
-        public IEnumerable<Model> GetModels([FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "page")] int count = 25)
+        public IEnumerable<Model> GetModels([FromQuery(Name = "page")] int page = 0, [FromQuery(Name = "count")] int count = 25)
         {
             if (0 > page) page = 0;
             if (count > 25) count = 25;
@@ -175,7 +174,7 @@ namespace ModelSaber.API.Controllers
         }
 
         [Maulth(Role.Manager)]
-        [HttpPost("update/{id}")]
+        [HttpPost("approve/{id}")]
         public async Task<IActionResult> ApproveModel(Guid id, [FromQuery(Name = "public")] bool makePublic)
         {
             Model model = await _modelSaberContext.Models.FirstOrDefaultAsync(m => m.Id == id);
@@ -194,6 +193,8 @@ namespace ModelSaber.API.Controllers
             return Ok(model);
         }
 
+        [Maulth(Role.Manager)]
+        [HttpPost("deny/{id}")]
         public async Task<IActionResult> DenyModel(Guid id)
         {
             Model model = await _modelSaberContext.Models.FirstOrDefaultAsync(m => m.Id == id);
