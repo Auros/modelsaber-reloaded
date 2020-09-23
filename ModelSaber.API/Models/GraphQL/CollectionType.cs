@@ -15,6 +15,8 @@ namespace ModelSaber.API.Models.GraphQL
             Field(c => c.DefaultInstallPath, nullable: true).Description("The default relative path that files in this collection install to.");
             Field<VisibilityType>("defaultVisibility", description: "The default visbility for any models uploaded to this collection.");
             Field<ApprovalStatusType>("defaultApprovalStatus", description: "The default approval status for any models uploaded to this collection.");
+
+            //FieldAsync<ListGraphType<Modelg>>
         }
     }
 

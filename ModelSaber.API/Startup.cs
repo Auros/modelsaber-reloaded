@@ -36,8 +36,10 @@ namespace ModelSaber.API
 
             services.AddHttpContextAccessor();
 
+            services.AddSingleton<UserType>();
             services.AddSingleton<VisibilityType>();
             services.AddSingleton<CollectionType>();
+            services.AddSingleton<DiscordUserType>();
             services.AddSingleton<ModelSaberQuery>();
             services.AddSingleton<ModelSaberSchema>();
             services.AddSingleton<ApprovalStatusType>();
