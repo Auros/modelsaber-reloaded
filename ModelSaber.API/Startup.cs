@@ -1,13 +1,14 @@
+using GraphQL.Server;
+using System.Net.Http;
 using ModelSaber.API.Models;
 using ModelSaber.API.Security;
+using ModelSaber.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using ModelSaber.API.Models.GraphQL;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ModelSaber.API.Services;
-using System.Net.Http;
-using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace ModelSaber.API
 {
@@ -32,6 +33,16 @@ namespace ModelSaber.API
             services.AddScoped<IAuditor, Auditor>();
             services.AddSingleton<IJWTService, JWTService>();
             services.AddDbContext<ModelSaberContext>();
+
+            services.AddHttpContextAccessor();
+
+            services.AddSingleton<VisibilityType>();
+            services.AddSingleton<CollectionType>();
+            services.AddSingleton<ModelSaberQuery>();
+            services.AddSingleton<ModelSaberSchema>();
+            services.AddSingleton<ApprovalStatusType>();
+            services.AddGraphQL().AddSystemTextJson().AddGraphTypes(typeof(ModelSaberSchema));
+
             services.AddControllers();
         }
 
@@ -48,6 +59,8 @@ namespace ModelSaber.API
                 .AllowAnyMethod()
                 .AllowAnyHeader());
             app.UseMiddleware<JWTMiddleware>();
+            app.UseGraphQL<ModelSaberSchema>("/graphql");
+            app.UseGraphQLAltair();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

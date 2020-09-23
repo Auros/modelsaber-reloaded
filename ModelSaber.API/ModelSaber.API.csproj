@@ -20,7 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ModelSaber.Common\ModelSaber.Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\GraphQL\" />
-  </ItemGroup>
 </Project>
