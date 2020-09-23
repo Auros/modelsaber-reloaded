@@ -119,7 +119,7 @@ namespace ModelSaber.API.Controllers
             _modelSaberContext.Playlists.Remove(playlist);
             await _modelSaberContext.SaveChangesAsync();
             return NoContent();
-        } 
+        }
 
         public class UploadBody
         {
