@@ -1,4 +1,4 @@
-﻿namespace ModelSaber.API.Models
+﻿namespace ModelSaber.Common
 {
     public class VoteStats
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using ModelSaber.Common;
-using ModelSaber.API.Models;
 using System.Threading.Tasks;
 using ModelSaber.API.Security;
 using Microsoft.AspNetCore.Mvc;

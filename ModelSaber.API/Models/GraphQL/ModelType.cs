@@ -1,4 +1,6 @@
-﻿using GraphQL.Types;
+﻿using System;
+using System.Linq;
+using GraphQL.Types;
 using ModelSaber.Common;
 
 namespace ModelSaber.API.Models.GraphQL
@@ -22,6 +24,33 @@ namespace ModelSaber.API.Models.GraphQL
             Field(type: typeof(CollectionType), name: "collection", description: "The collection the model is present on.");
             Field<VisibilityType>("visibility", description: "The visibility of this model.");
             Field<ApprovalStatusType>("approvalStatus", description: "The approval status of this model.");
+            Field(type: typeof(PlaylistType), name: "playlists", description: "The playlists that this model is present in");
+            Field<VoteDataType>(
+                "voteData",
+                "The vote data of the model.",
+                resolve: context =>
+                {
+                    ModelSaberContext modelSaberContext = context.Resolve<ModelSaberContext>();
+                    return new VoteData
+                    {
+                        Votes = modelSaberContext.Votes.Where(v => v.Source == context.Source.Id).ToArray(),
+                    };
+                }
+            );
+            Field<ListGraphType<CommentType>>(
+                "comments",
+                "The comments on the model.",
+                resolve: context =>
+                {
+                    ModelSaberContext modelSaberContext = context.Resolve<ModelSaberContext>();
+                    return modelSaberContext.Comments.Where(c => c.Source == context.Source.Id);
+                }
+            );
+        }
+
+        private int ListGraphType<T>(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 

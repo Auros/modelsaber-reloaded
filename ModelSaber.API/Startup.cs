@@ -36,9 +36,14 @@ namespace ModelSaber.API
 
             services.AddHttpContextAccessor();
 
+            services.AddSingleton<VoteType>();
             services.AddSingleton<UserType>();
             services.AddSingleton<ModelType>();
+            services.AddSingleton<CommentType>();
+            services.AddSingleton<VoteDataType>();
             services.AddSingleton<FileTypeType>();
+            services.AddSingleton<PlaylistType>();
+            services.AddSingleton<VoteStatsType>();
             services.AddSingleton<VisibilityType>();
             services.AddSingleton<CollectionType>();
             services.AddSingleton<DiscordUserType>();

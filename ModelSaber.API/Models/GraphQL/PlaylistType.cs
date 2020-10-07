@@ -4,18 +4,20 @@ using ModelSaber.Common;
 
 namespace ModelSaber.API.Models.GraphQL
 {
-    public class UserType : ObjectGraphType<User>
+    public class PlaylistType : ObjectGraphType<Playlist>
     {
-        public UserType()
+        public PlaylistType()
         {
-            Name = "User";
-            Field(type: typeof(GuidGraphType), name: "id", description: "The ID of the user.");
-            Field<IntGraphType>("Role", "The role of the user.", resolve: context => (int)context.Source.Role);
-            Field(u => u.Biography, nullable: true).Description("The Markdown bio of the user.");
-            Field(type: typeof(DiscordUserType), name: "profile", description: "The discord profile of the user.");
+            Name = "Playlist";
+            Field(type: typeof(GuidGraphType), name: "id", description: "The ID of the playlist.");
+            Field(type: typeof(UserType), name: "user", description: "The creator of the playlist.");
+            Field(type: typeof(ModelType), name: "models", description: "The models in this playlist.");
+            Field(p => p.Name).Description("The name of the playlist.");
+            Field(p => p.Description).Description("The Markdown description of the playlist.");
+            Field(p => p.ThumbnailURL).Description("The relative URL of the thumbnail for the playlist.");
             Field<VoteDataType>(
                 "voteData",
-                "The vote data of the user.",
+                "The vote data of the model",
                 resolve: context =>
                 {
                     ModelSaberContext modelSaberContext = context.Resolve<ModelSaberContext>();
@@ -27,7 +29,7 @@ namespace ModelSaber.API.Models.GraphQL
             );
             Field<ListGraphType<CommentType>>(
                 "comments",
-                "The comments on the user.",
+                "The comments on the model.",
                 resolve: context =>
                 {
                     ModelSaberContext modelSaberContext = context.Resolve<ModelSaberContext>();
