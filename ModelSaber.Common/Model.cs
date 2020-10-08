@@ -32,6 +32,11 @@ namespace ModelSaber.Common
         public User Uploader { get; set; }
 
         /// <summary>
+        /// The license of the model.
+        /// </summary>
+        public License License { get; set; }
+
+        /// <summary>
         /// The amount of times the model was downloaded.
         /// </summary>
         public int DownloadCount { get; set; }

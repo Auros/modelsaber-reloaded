@@ -39,6 +39,7 @@ namespace ModelSaber.API
             services.AddSingleton<VoteType>();
             services.AddSingleton<UserType>();
             services.AddSingleton<ModelType>();
+            services.AddSingleton<LicenseType>();
             services.AddSingleton<CommentType>();
             services.AddSingleton<VoteDataType>();
             services.AddSingleton<FileTypeType>();

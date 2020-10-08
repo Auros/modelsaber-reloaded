@@ -96,6 +96,7 @@ namespace ModelSaber.API.Controllers
                 Tags = body.Tags,
                 DownloadCount = 0,
                 Uploader = uploader,
+                License = body.License,
                 Collection = collection,
                 Description = body.Description ?? ""
             };
@@ -216,6 +217,7 @@ namespace ModelSaber.API.Controllers
         {
             public string Name { get; set; }
             public string[] Tags { get; set; } = Array.Empty<string>();
+            public License License { get; set; }
             public IFormFile Model { get; set; }
             public Guid CollectionId { get; set; }
             public string Description { get; set; }

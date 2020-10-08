@@ -38,6 +38,7 @@ namespace ModelSaber.API
             modelBuilder.Entity<Playlist>().Property(p => p.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Collection>().Property(c => c.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<User>().Property(u => u.Profile).HasColumnType("jsonb");
+            modelBuilder.Entity<Model>().Property(m => m.License).HasColumnType("jsonb");
             modelBuilder.Entity<Model>().HasMany(m => m.Playlists).WithMany(p => p.Models);
             modelBuilder.Entity<Playlist>().HasMany(p => p.Models).WithMany(m => m.Playlists);
         }
