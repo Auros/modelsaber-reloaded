@@ -1,0 +1,13 @@
+@import './init.scss';
+
+$purple-main: #7D2AC1;
+$light-orange: #EDAF4C;
+$light-purple: #9A34ED;
+$lime: #1CED6C;
+$green: #1BA14E;
+
+$primary: $purple-main;
+$info: $light-orange;
+$link: $lime;
+
+@import './post.scss';

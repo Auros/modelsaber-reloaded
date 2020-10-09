@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Navbar from '../components/navbar'
 import { useAuth, useDispatchAuth } from '../components/store'
 
 const Index = () => {
@@ -13,9 +14,14 @@ const Index = () => {
             <Head>
                 <title>ModelSaber</title>
             </Head>
-            <p>Token: {auth.token}</p>
-            <button onClick={handleLogin}>Log In</button>
-            <button onClick={handleLogout}>Log Out</button>
+            <Navbar />
+            <div className="container">
+                <div className="box">
+                    <p>Token: {auth.token}</p>
+                    <button className="button is-primary" onClick={handleLogin}>Log In</button>
+                    <button className="button is-info" onClick={handleLogout}>Log Out</button>
+                </div>
+            </div>
         </>
     )
 }
